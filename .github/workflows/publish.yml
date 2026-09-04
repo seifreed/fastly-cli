@@ -20,7 +20,7 @@ jobs:
       - name: Build distributions
         run: uv build
       - name: Store distributions
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: python-package-distributions
           path: dist/

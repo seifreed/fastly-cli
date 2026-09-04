@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fastly-multiclient"
+version = "0.1.0"
+description = "Multi-account Fastly REST client and CLI"
+readme = "README.md"
+requires-python = ">=3.14"
+license = "MIT"
+authors = [{ name = "Fastly MultiClient contributors" }]
+dependencies = []
+
+[project.scripts]
+fastly = "fastly_cli.cli:main"
+
+[dependency-groups]
+dev = [
+  "bandit>=1.8",
+  "black>=25.1",
+  "mypy>=1.15",
+  "pip-audit>=2.9",
+  "pytest>=8.3",
+  "pytest-cov>=6.0",
+  "ruff>=0.9",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+fastly_cli = ["api_catalog.json"]
+
+[tool.black]
+line-length = 88
+target-version = ["py314"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py314"
+
+[tool.mypy]
+python_version = "3.14"
+strict = true
+files = ["src", "tests"]
+exclude = ["^venv/"]
+
+[tool.pytest.ini_options]
+addopts = "--cov=fastly_cli --cov-report=term-missing --cov-fail-under=100"
+pythonpath = ["src"]
+testpaths = ["tests"]

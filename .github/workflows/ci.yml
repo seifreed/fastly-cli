@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Quality (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v6
+      - name: Set up Python
+        run: uv python install 3.14
+      - name: Install dependencies
+        run: uv sync --group dev --python 3.14
+      - name: Run tests
+        run: uv run --python 3.14 pytest
+      - name: Check formatting
+        run: uv run --python 3.14 black --check .
+      - name: Lint
+        run: uv run --python 3.14 ruff check .
+      - name: Type check
+        run: uv run --python 3.14 mypy .
+      - name: Security scan
+        run: uv run --python 3.14 bandit -r src
+      - name: Dependency audit
+        run: uv run --python 3.14 pip-audit .

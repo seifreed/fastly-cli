@@ -42,3 +42,41 @@ jobs:
           path: dist/
       - name: Publish distributions
         uses: pypa/gh-action-pypi-publish@release/v1
+
+  release:
+    name: Create GitHub release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download distributions
+        uses: actions/download-artifact@v6
+        with:
+          name: python-package-distributions
+          path: dist/
+      - name: Create release and upload assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cat > release-notes.md <<'EOF'
+          ## fastly-multiclient v0.1.0
+
+          The first release of fastly-multiclient provides a Python 3.14 multi-account REST client and CLI for the Fastly API.
+
+          ### Highlights
+
+          - Generic requests for any Fastly HTTP method and route.
+          - Multi-account configuration with single-account and all-account execution.
+          - A catalog of 636 Fastly JS 16.1.0 operations and parameter metadata.
+          - Named CLI arguments for catalog operations and grouped endpoint commands.
+          - JSON and TOON response output.
+          - JSON, binary, form, and multipart request bodies.
+          - Explicit `--allow-mutation` protection for mutating requests.
+          - Python 3.14 support on Windows, Linux, and macOS.
+          EOF
+          gh release create "${GITHUB_REF_NAME}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --title "fastly-multiclient ${GITHUB_REF_NAME}" \
+            --notes-file release-notes.md \
+            dist/*
